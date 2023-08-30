@@ -6,32 +6,32 @@ from creature import Creature
 def mock_roll_dice(dice_string):
     return 10
 
-@pytest.fixture(autouse=True)
+@pytest.fixture()
 def mock_dice_roll(monkeypatch):
     monkeypatch.setattr('battle.roll_dice', mock_roll_dice)
     monkeypatch.setattr('creature.roll_dice', mock_roll_dice)
 
-def test_run_two_creature_battle():
+def test_run_two_creature_battle(mock_dice_roll):
     creature1 = Creature("Dragon", 18, 100, [{'number_of_attacks': 1, 'to_hit_bonus': 5, 'damage_roll': '1d10'}])
     creature2 = Creature("Goblin", 12, 20, [{'number_of_attacks': 1, 'to_hit_bonus': 2, 'damage_roll': '1d6'}])
     run_two_creature_battle(creature1, creature2)
     assert creature1.is_alive() == True
     assert creature2.is_alive() == False
 
-def test_roll_initiative():
+def test_roll_initiative(mock_dice_roll):
     creature1 = Creature("Dragon", 18, 100, [])
     creature2 = Creature("Goblin", 12, 20, [])
     creatures = roll_initiative([creature1, creature2])
     assert creatures == [creature1, creature2]
 
-def test_set_targets_to_next_creature():
+def test_set_targets_to_next_creature(mock_dice_roll):
     creature1 = Creature("Dragon", 18, 100, [])
     creature2 = Creature("Goblin", 12, 20, [])
     set_targets_to_next_creature([creature1, creature2])
     assert creature1.target == creature2
     assert creature2.target == creature1
 
-def test_run_rounds():
+def test_run_rounds(mock_dice_roll):
     creature1 = Creature("Dragon", 18, 100, [{'number_of_attacks': 1, 'to_hit_bonus': 5, 'damage_roll': '1d10'}])
     creature2 = Creature("Goblin", 12, 20, [{'number_of_attacks': 1, 'to_hit_bonus': 2, 'damage_roll': '1d6'}])
     creature1.target = creature2
@@ -41,8 +41,8 @@ def test_run_rounds():
     assert creature2.is_alive() == False
 
 def test_creatures_hit_points_random_walk():
-    creature1 = Creature("Elder Dragon", 19, 500, [{'number_of_attacks': 1, 'to_hit_bonus': 8, 'damage_roll': '1d10'}])
-    creature2 = Creature("Dragon", 18, 150, [{'number_of_attacks': 1, 'to_hit_bonus': 8, 'damage_roll': '1d10'}])
+    creature1 = Creature("Elder Dragon", 18, 500, [{'number_of_attacks': 3, 'to_hit_bonus': 5, 'damage_roll': '1d10'}])
+    creature2 = Creature("Elder Dragon 2", 18, 500, [{'number_of_attacks': 3, 'to_hit_bonus': 5, 'damage_roll': '1d10'}])
     creature1.target = creature2
     creature2.target = creature1
     run_rounds([creature1, creature2])
