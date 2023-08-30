@@ -30,7 +30,7 @@ DnD Combat Simulator is a Python project that simulates a battle between two cre
 
 1. Create creature objects.
    ```
-   creature1 = Creature(name="Dragon", armor_class=18, max_hit_points=200, attacks=[...])
+   creature1 = Creature(name="Dragon", armor_class=18, max_hit_points=200, attacks=[{'name':'claws', 'to_hit_bonus': 5, 'damage_roll': '1d10', 'number_of_attacks': 3}])
    creature2 = Creature(name="Goblin", armor_class=15, max_hit_points=100, attacks=[...])
    ```
 
