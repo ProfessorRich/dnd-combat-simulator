@@ -1,6 +1,8 @@
 from creature import Creature
 from dice_roll import roll_dice
 
+creatures_hit_points_random_walk={}
+
 def run_two_creature_battle(creature1, creature2):
     creatures_sorted_by_initiative = roll_initiative([creature1, creature2])
     set_targets_to_next_creature(creatures_sorted_by_initiative)
@@ -8,15 +10,29 @@ def run_two_creature_battle(creature1, creature2):
 
 def run_rounds(creatures):
     combat_over = False
+    global creatures_hit_points_random_walk
+    for creature in creatures:
+        creatures_hit_points_random_walk[creature.name] = [creature.max_hit_points]
+
+
     while not combat_over:
-        for creature in creatures:
-            if creature.is_alive():
-                creature.attack_with_all_attacks()
-        number_alive=0
-        for creature in creatures:
-            number_alive += creature.is_alive()
-        if number_alive <= 1:
-            combat_over = True
+        run_one_round(creatures)
+        combat_over = do_we_have_peace(creatures)
+
+def do_we_have_peace(creatures):
+    for creature in creatures:
+        if (creature.is_alive() and creature.target.is_alive()):
+            return False
+    return True
+
+def run_one_round(creatures):
+    for creature in creatures:
+        if creature.is_alive():
+            creature.attack_with_all_attacks()
+
+    global creatures_hit_points_random_walk
+    for creature in creatures:
+        creatures_hit_points_random_walk[creature.name].append(creature.hit_points)
 
 def roll_initiative(creatures):
     creatures_with_rolls = []
