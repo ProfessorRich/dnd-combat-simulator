@@ -50,3 +50,5 @@ def set_targets_to_next_creature(creatures):
         previous_creature = creature
     creatures[0].target = previous_creature
 
+
+    

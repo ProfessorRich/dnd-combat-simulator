@@ -41,8 +41,8 @@ def test_run_rounds():
     assert creature2.is_alive() == False
 
 def test_creatures_hit_points_random_walk():
-    creature1 = Creature("Elder Dragon", 19, 500, [{'number_of_attacks': 1, 'to_hit_bonus': 5, 'damage_roll': '1d10'}])
-    creature2 = Creature("Dragon", 18, 150, [{'number_of_attacks': 1, 'to_hit_bonus': 5, 'damage_roll': '1d10'}])
+    creature1 = Creature("Elder Dragon", 19, 500, [{'number_of_attacks': 1, 'to_hit_bonus': 8, 'damage_roll': '1d10'}])
+    creature2 = Creature("Dragon", 18, 150, [{'number_of_attacks': 1, 'to_hit_bonus': 8, 'damage_roll': '1d10'}])
     creature1.target = creature2
     creature2.target = creature1
     run_rounds([creature1, creature2])
