@@ -1,7 +1,7 @@
 from dice_roll import roll_dice
 
 class Creature:
-    def __init__(self, name, armor_class, max_hit_points, attacks, hit_points=None, ability_scores=None, immunities=None, resistances=None, vulnerabilities=None):
+    def __init__(self, name, armor_class, max_hit_points, attacks, hit_points=None, ability_scores=None, immunities=None, resistances=None, vulnerabilities=None, target=None):
         self.name=name
         self.armor_class=armor_class
         self.max_hit_points=max_hit_points
@@ -11,6 +11,7 @@ class Creature:
         self.immunities=immunities if immunities is not None else {}
         self.resistances=resistances if resistances is not None else {}
         self.vulnerabilities=vulnerabilities if vulnerabilities is not None else {}
+        self.target=target if target is not None else self
 
     def is_alive(self):
         return self.hit_points > 0
@@ -18,19 +19,19 @@ class Creature:
     def take_damage(self, damage):
         self.hit_points -= damage
 
-    def attack(self, target):
+    def attack_with_all_attacks(self):
         for attack in self.attacks:
             counter = 0
             while counter < attack['number_of_attacks']:
-                if self.does_attack_hit(attack['to_hit_bonus'], target):
+                if self.does_attack_hit(attack['to_hit_bonus']):
                     #hit
-                    self.do_damage(attack['damage_roll'], target)
+                    self.do_damage(attack['damage_roll'])
                 counter += 1
     
-    def does_attack_hit(self, to_hit_bonus, target):
+    def does_attack_hit(self, to_hit_bonus):
         roll_to_hit = roll_dice('1d20')
         total_hit_roll = roll_to_hit + to_hit_bonus
-        return total_hit_roll >= target.armor_class
+        return total_hit_roll >= self.target.armor_class
     
-    def do_damage(self, damage_roll, target):
-        target.take_damage(roll_dice(damage_roll))
+    def do_damage(self, damage_roll):
+        self.target.take_damage(roll_dice(damage_roll))
