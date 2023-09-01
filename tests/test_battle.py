@@ -1,50 +1,24 @@
 import pytest
-from battle import run_two_creature_battle, roll_initiative, set_targets_to_next_creature, run_rounds, creatures_hit_points_random_walk
+from battle import run_two_creature_battle, roll_initiative, set_targets_to_next_creature, run_rounds, run_battle_x_times, reset_creatures_hit_points, random_walk_creatures_hit_points, all_walks_creatures_hit_points
 from creature import Creature
 
-# mock roll_dice to make the tests deterministic
-def mock_roll_dice(dice_string):
-    return 10
+def test_run_battle_x_times():
 
-@pytest.fixture()
-def mock_dice_roll(monkeypatch):
-    monkeypatch.setattr('battle.roll_dice', mock_roll_dice)
-    monkeypatch.setattr('creature.roll_dice', mock_roll_dice)
+    creature1 = Creature("Goblin", 15, 7, [{'number_of_attacks': 1, 'to_hit_bonus': 4, 'damage_roll': '1d6'}])
+    creature2 = Creature("Orc", 13, 15, [{'number_of_attacks': 1, 'to_hit_bonus': 5, 'damage_roll': '1d12'}])
 
-def test_run_two_creature_battle(mock_dice_roll):
-    creature1 = Creature("Dragon", 18, 100, [{'number_of_attacks': 1, 'to_hit_bonus': 5, 'damage_roll': '1d10'}])
-    creature2 = Creature("Goblin", 12, 20, [{'number_of_attacks': 1, 'to_hit_bonus': 2, 'damage_roll': '1d6'}])
-    run_two_creature_battle(creature1, creature2)
-    assert creature1.is_alive() == True
-    assert creature2.is_alive() == False
+    run_battle_x_times([creature1, creature2], 1000)
 
-def test_roll_initiative(mock_dice_roll):
-    creature1 = Creature("Dragon", 18, 100, [])
-    creature2 = Creature("Goblin", 12, 20, [])
-    creatures = roll_initiative([creature1, creature2])
-    assert creatures == [creature1, creature2]
+    import matplotlib.pyplot as plt
+    test_number = 0
+    colours = {'Orc': 'b', 'Goblin': 'r'}
 
-def test_set_targets_to_next_creature(mock_dice_roll):
-    creature1 = Creature("Dragon", 18, 100, [])
-    creature2 = Creature("Goblin", 12, 20, [])
-    set_targets_to_next_creature([creature1, creature2])
-    assert creature1.target == creature2
-    assert creature2.target == creature1
+    for random_walk in all_walks_creatures_hit_points:
+        test_number += 1
+        for key, values in random_walk.items():
+            plt.plot(values, label=(str(key) + " " + str(test_number)), color=colours[key])
+    plt.xlabel('Round')
+    plt.ylabel('Hit Points')
+    plt.show()
 
-def test_run_rounds(mock_dice_roll):
-    creature1 = Creature("Dragon", 18, 100, [{'number_of_attacks': 1, 'to_hit_bonus': 5, 'damage_roll': '1d10'}])
-    creature2 = Creature("Goblin", 12, 20, [{'number_of_attacks': 1, 'to_hit_bonus': 2, 'damage_roll': '1d6'}])
-    creature1.target = creature2
-    creature2.target = creature1
-    run_rounds([creature1, creature2])
-    assert creature1.is_alive() == True
-    assert creature2.is_alive() == False
-
-def test_creatures_hit_points_random_walk():
-    creature1 = Creature("Elder Dragon", 18, 500, [{'number_of_attacks': 3, 'to_hit_bonus': 5, 'damage_roll': '1d10'}])
-    creature2 = Creature("Elder Dragon 2", 18, 500, [{'number_of_attacks': 3, 'to_hit_bonus': 5, 'damage_roll': '1d10'}])
-    creature1.target = creature2
-    creature2.target = creature1
-    run_rounds([creature1, creature2])
-    print(creatures_hit_points_random_walk[creature1.name])
-    print(creatures_hit_points_random_walk[creature2.name])
+    print(all_walks_creatures_hit_points)

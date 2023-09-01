@@ -1,19 +1,36 @@
 from creature import Creature
 from dice_roll import roll_dice
 
-creatures_hit_points_random_walk={}
+all_walks_creatures_hit_points=[]
+random_walk_creatures_hit_points={}
+
+def run_battle_x_times(creatures, x):
+    global all_walks_creatures_hit_points
+    global random_walk_creatures_hit_points
+
+    if len(creatures) != 2:
+        raise ValueError("Only two creature battle possible right now!")
+    else:
+        for i in range(x):
+            run_two_creature_battle(creatures[0], creatures[1])
+            all_walks_creatures_hit_points.append(random_walk_creatures_hit_points)
+            random_walk_creatures_hit_points={}
 
 def run_two_creature_battle(creature1, creature2):
+    reset_creatures_hit_points([creature1, creature2])
     creatures_sorted_by_initiative = roll_initiative([creature1, creature2])
     set_targets_to_next_creature(creatures_sorted_by_initiative)
     run_rounds(creatures_sorted_by_initiative)
 
+def reset_creatures_hit_points(creatures):
+    for creature in creatures:
+        creature.reset_hit_points()
+
 def run_rounds(creatures):
     combat_over = False
-    global creatures_hit_points_random_walk
+    global random_walk_creatures_hit_points
     for creature in creatures:
-        creatures_hit_points_random_walk[creature.name] = [creature.max_hit_points]
-
+        random_walk_creatures_hit_points[creature.name] = [creature.max_hit_points]
 
     while not combat_over:
         run_one_round(creatures)
@@ -30,9 +47,9 @@ def run_one_round(creatures):
         if creature.is_alive():
             creature.attack_with_all_attacks()
 
-    global creatures_hit_points_random_walk
+    global random_walk_creatures_hit_points
     for creature in creatures:
-        creatures_hit_points_random_walk[creature.name].append(creature.hit_points)
+        random_walk_creatures_hit_points[creature.name].append(creature.hit_points)
 
 def roll_initiative(creatures):
     creatures_with_rolls = []

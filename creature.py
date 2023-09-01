@@ -35,3 +35,6 @@ class Creature:
     
     def do_damage(self, damage_roll):
         self.target.take_damage(roll_dice(damage_roll))
+
+    def reset_hit_points(self):
+        self.hit_points = self.max_hit_points
